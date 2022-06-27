@@ -1,16 +1,15 @@
 # winning_habit
+- 습관을 등록하고 습관을 달성할 수 있는 앱
 
-A new Flutter project.
+## 앱 기능
+- 습관 등록
+- 습관 달성하기
+- 통계 보기
 
-## Getting Started
+## 개발공수
+[개발 공수](https://jerryco.notion.site/WinningHabit-Flutter-67a9c70ab7e44e33ad85d7f1e418714e)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 커밋 컨벤션
+- 기능 추가: feat
+- 기능 수정: mod
+- 오류 수정: fix
