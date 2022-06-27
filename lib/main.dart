@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:winning_habit/view/chart/chart.dart';
 import 'package:winning_habit/view/home/home.dart';
 import 'package:winning_habit/view/setting/setting.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
+  initializeDateFormatting('ko_KR', null);
   runApp(const MyApp());
 }
 
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'WinningHabit - 습관개선 앱',
-      home: MyStatefulWidget(),
+      home: NavigationBar(),
     );
   }
 }
@@ -29,20 +31,6 @@ class NavigationBar extends StatefulWidget {
 }
 
 class _NavigationBarState extends State<NavigationBar> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key? key}) : super(key: key);
-
-  @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
-}
-
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = [
     HomeView(),

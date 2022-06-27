@@ -13,3 +13,10 @@
 - 기능 추가: feat
 - 기능 수정: mod
 - 오류 수정: fix
+
+## 사용 라이브러리
+- table_calendar: 3.0.6
+- intl: 0.17.0
+
+## Issue
+- StatefulWidget의 특정 오브젝트의 상태를 변경하기 위해서는 setState(()) {};를 사용해야 한다.
