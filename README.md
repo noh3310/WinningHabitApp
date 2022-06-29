@@ -18,6 +18,8 @@
 - table_calendar: 3.0.6
 - intl: 0.17.0
 - flutter_section_list: 1.1.0
+- flutter_slidable: 1.3.0
+- flutter_colorpicker: 1.0.3
 
 ## Issue
 - StatefulWidget의 특정 오브젝트의 상태를 변경하기 위해서는 setState(()) {};를 사용해야 한다.

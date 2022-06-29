@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:winning_habit/view/home/add_habit.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -20,7 +21,10 @@ class HomeView extends StatelessWidget {
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => AddHabit(state: AddHabitState.CREATE)));
+              },
               icon: const Icon(Icons.add),
               color: Colors.black,
             ),
@@ -178,29 +182,34 @@ class TableViewCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(7.0),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: color,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20.0,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => AddHabit(state: AddHabitState.MODIFY)));
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(7.0),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: color,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const SizedBox(width: 6.0),
-            Text(percent),
-          ],
+              const SizedBox(width: 6.0),
+              Text(percent),
+            ],
+          ),
         ),
       ),
     );
