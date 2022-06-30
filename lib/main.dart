@@ -4,7 +4,7 @@ import 'package:winning_habit/view/home/home.dart';
 import 'package:winning_habit/view/setting/setting.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
   initializeDateFormatting('ko_KR', null);
   runApp(const MyApp());
 }
