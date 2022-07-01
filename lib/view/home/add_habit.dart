@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:winning_habit/database/database.dart';
 
 enum AddHabitState { CREATE, MODIFY }
 
@@ -158,7 +159,11 @@ class _InputHabitDataState extends State<InputHabitData> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  DatabaseManager manager = DatabaseManager();
+                  await manager.init();
+                  await manager.addHabit('name', 3);
+                  print(manager.box.values);
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(

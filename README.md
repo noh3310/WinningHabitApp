@@ -21,6 +21,9 @@
 - flutter_slidable: 1.3.0
 - flutter_colorpicker: 1.0.3
 - fl_chart: 0.55.0
+- hive: 2.2.3
+- hive_flutter: 1.1.0
+- uuid: 3.0.6
 
 ## Issue
 - StatefulWidget의 특정 오브젝트의 상태를 변경하기 위해서는 setState(()) {};를 사용해야 한다.
