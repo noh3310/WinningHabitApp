@@ -161,9 +161,7 @@ class _InputHabitDataState extends State<InputHabitData> {
               child: ElevatedButton(
                 onPressed: () async {
                   DatabaseManager manager = DatabaseManager();
-                  await manager.init();
-                  await manager.addHabit('name', 3);
-                  print(manager.box.values);
+                  manager.addHabit('추가', 10);
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(

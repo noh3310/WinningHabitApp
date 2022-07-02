@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+
+import 'package:winning_habit/database/database.dart';
 import 'package:winning_habit/view/chart/chart.dart';
 import 'package:winning_habit/view/home/home.dart';
 import 'package:winning_habit/view/setting/setting.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'package:hive/hive.dart';
-import 'package:winning_habit/database/habit_data.dart';
-
 void main() async {
-  await Hive.initFlutter();
-  // 생성된 어댑터를 등록해준다.
-  Hive.registerAdapter(HabitDataAdapter());
-  // 제네릭을 선언해 habitData에는 Habitdata만 담을 수 있도록 설정
-  await Hive.openBox<HabitData>('habitData');
-
-  Box<HabitData> box = await Hive.openBox('habitData');
-  final _todo = HabitData(name: "hihi", generateDate: DateTime.now(), targetCount: 2);
-  await box.put(_todo.id, _todo);
-  print(box.values.first.name);
+  final database = DatabaseManager();
+  await database.init();
 
   initializeDateFormatting('ko_KR', null);
   runApp(const MyApp());

@@ -27,3 +27,7 @@
 
 ## Issue
 - StatefulWidget의 특정 오브젝트의 상태를 변경하기 위해서는 setState(()) {};를 사용해야 한다.
+- Hive 데이터베이스를 사용할 때 처음 Adadper를 생성할 때 TypeId를 변경하면 안된다. 만약 변경하려면 아래 코드를 작성 후 Adapter를 등록해야한다.
+    ```Dart
+  Hive.ignoreTypeId<'변경된 어댑터'>('변경전 TypeId');
+    ```

@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:winning_habit/database/database.dart';
 import 'package:winning_habit/view/home/add_habit.dart';
 
 class HomeView extends StatelessWidget {
@@ -91,6 +92,8 @@ class _CalendarViewState extends State<CalendarView> {
 }
 
 class TableView extends StatelessWidget with SectionAdapterMixin {
+  var habitData = DatabaseManager().getHabitData();
+
   @override
   Widget build(BuildContext context) {
     return SectionListView.builder(adapter: this);
@@ -129,8 +132,8 @@ class TableView extends StatelessWidget with SectionAdapterMixin {
       ),
       child: TableViewCell(
         title:
-            indexPath.section == 0 ? '습관정보습관정보습관정보습관정보습관정보습관정보습관정보습관정보' : '섹션2',
-        percent: indexPath.section == 0 ? '1/12' : '섹션 2',
+            habitData![indexPath.section].name,
+        percent: habitData![indexPath.section].targetCount.toString(),
         color: Colors.blueAccent,
       ),
     );
@@ -138,7 +141,7 @@ class TableView extends StatelessWidget with SectionAdapterMixin {
 
   @override
   int numberOfItems(int section) {
-    return 10;
+    return habitData == null ? 0 : habitData!.length;
   }
 
   @override

@@ -5,7 +5,7 @@ part 'habit_data.g.dart';
 
 var uuid = const Uuid();
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 0)
 class HabitData {
   @HiveField(0)
   String id;
