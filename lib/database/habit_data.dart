@@ -3,7 +3,7 @@ import 'package:uuid/uuid.dart';
 
 part 'habit_data.g.dart';
 
-var uuid = const Uuid();
+var _uuid = const Uuid();
 
 @HiveType(typeId: 0)
 class HabitData {
@@ -20,5 +20,5 @@ class HabitData {
   int targetCount;
 
   HabitData({String? id, required this.name, required this.generateDate, required this.targetCount})
-  : id = id ?? uuid.v4() ;
+  : id = id ?? _uuid.v4() ;
 }

@@ -24,7 +24,9 @@ class HomeView extends StatelessWidget {
             IconButton(
               onPressed: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => AddHabit(state: AddHabitState.CREATE)));
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => AddHabit(state: AddHabitState.CREATE)));
               },
               icon: const Icon(Icons.add),
               color: Colors.black,
@@ -92,7 +94,7 @@ class _CalendarViewState extends State<CalendarView> {
 }
 
 class TableView extends StatelessWidget with SectionAdapterMixin {
-  var habitData = DatabaseManager().getHabitData();
+  var habitData = DatabaseManager.instance.getHabitData();
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +125,8 @@ class TableView extends StatelessWidget with SectionAdapterMixin {
         children: [
           SlidableAction(
             onPressed: (context) {
-              print('end');
+              final addData = habitData!.toList()[indexPath.item];
+              DatabaseManager.instance.addDailyHabit(addData);
             },
             foregroundColor: Colors.blueAccent,
             icon: Icons.plus_one,
@@ -131,8 +134,7 @@ class TableView extends StatelessWidget with SectionAdapterMixin {
         ],
       ),
       child: TableViewCell(
-        title:
-            habitData![indexPath.section].name,
+        title: habitData![indexPath.section].name,
         percent: habitData![indexPath.section].targetCount.toString(),
         color: Colors.blueAccent,
       ),
@@ -187,7 +189,10 @@ class TableViewCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => AddHabit(state: AddHabitState.MODIFY)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => AddHabit(state: AddHabitState.MODIFY)));
       },
       child: Padding(
         padding: const EdgeInsets.all(7.0),

@@ -31,3 +31,7 @@
     ```Dart
   Hive.ignoreTypeId<'변경된 어댑터'>('변경전 TypeId');
     ```
+- Hive의 데이터를 삭제하려면 아래 코드를 실행하면 된다.
+  ```Dart
+  '삭제할 Box'.deleteFromDisk();
+  ```
