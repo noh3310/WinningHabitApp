@@ -93,7 +93,12 @@ class _CalendarViewState extends State<CalendarView> {
   }
 }
 
-class TableView extends StatelessWidget with SectionAdapterMixin {
+class TableView extends StatefulWidget {
+  @override
+  State<TableView> createState() => _TableViewState();
+}
+
+class _TableViewState extends State<TableView> with SectionAdapterMixin{
   var habitData = DatabaseManager.instance.getHabitData();
 
   @override
@@ -124,9 +129,15 @@ class TableView extends StatelessWidget with SectionAdapterMixin {
         motion: const ScrollMotion(),
         children: [
           SlidableAction(
-            onPressed: (context) {
-              final addData = habitData!.toList()[indexPath.item];
-              DatabaseManager.instance.addDailyHabit(addData);
+            onPressed: (context) async {
+              await DatabaseManager.instance.addDailyHabit(indexPath.section == 0
+                  ? DatabaseManager.instance
+                      .getNotAchieveHabitList(DateTime.now())[indexPath.item]
+                  : DatabaseManager.instance
+                      .getAchieveHabitList(DateTime.now())[indexPath.item]);
+              setState(() {
+                habitData = DatabaseManager.instance.getHabitData();
+              });
             },
             foregroundColor: Colors.blueAccent,
             icon: Icons.plus_one,
@@ -134,8 +145,21 @@ class TableView extends StatelessWidget with SectionAdapterMixin {
         ],
       ),
       child: TableViewCell(
-        title: habitData![indexPath.section].name,
-        percent: habitData![indexPath.section].targetCount.toString(),
+        title: indexPath.section == 0
+            ? DatabaseManager.instance
+                .getNotAchieveHabitList(DateTime.now())[indexPath.item]
+                .name
+            : DatabaseManager.instance
+                .getAchieveHabitList(DateTime.now())[indexPath.item]
+                .name,
+        //habitData![indexPath.section].name,
+        percent: DatabaseManager.instance.getDateHabitCount(
+            indexPath.section == 0
+                ? DatabaseManager.instance
+                    .getNotAchieveHabitList(DateTime.now())[indexPath.item]
+                : DatabaseManager.instance
+                    .getAchieveHabitList(DateTime.now())[indexPath.item],
+            DateTime.now()),
         color: Colors.blueAccent,
       ),
     );
@@ -143,7 +167,13 @@ class TableView extends StatelessWidget with SectionAdapterMixin {
 
   @override
   int numberOfItems(int section) {
-    return habitData == null ? 0 : habitData!.length;
+    if (section == 0) {
+      // 미달성한 습관개수 리턴
+      return DatabaseManager.instance.getNotAchieveHabitCount(DateTime.now());
+    } else {
+      // 달성한 습관개수 리턴
+      return DatabaseManager.instance.getAchieveHabitCount(DateTime.now());
+    }
   }
 
   @override

@@ -35,6 +35,10 @@ class DatabaseManager {
     _habitData = await Hive.openBox(_dataHabitString);
     _dailyHabitCount = await Hive.openBox(_dailyHabitCountString);
     // _dailyHabitCount?.deleteFromDisk();
+    //
+
+    getNotAchieveHabitCount(DateTime.now());
+    getAchieveHabitCount(DateTime.now());
   }
 
   // 습관 추가
@@ -52,7 +56,7 @@ class DatabaseManager {
         habit.id = uuid.v4();
       }
     }
-    await _habitData?.add(habit);
+    await _habitData?.put(habit.id, habit);
   }
 
   // 데일리 습관달성 데이터베이스 추가
@@ -61,7 +65,8 @@ class DatabaseManager {
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
 
     // 오늘 생성한 습관이 있는지 확인
-    var results = _dailyHabitCount?.values.toList()
+    var results = _dailyHabitCount?.values
+        .toList()
         .where((element) => element.habitTypeId == habitData.id)
         .where((element) => element.habitCountDate == startTime);
 
@@ -69,14 +74,144 @@ class DatabaseManager {
     if (results!.isEmpty) {
       var dailyHabit =
           DailyHabitCount(habitTypeId: habitData.id, habitCountDate: startTime);
-      await _dailyHabitCount?.add(dailyHabit);
-    }
-    else {  // 1 더해준다.
+      await _dailyHabitCount?.put(dailyHabit.id, dailyHabit);
+    } else {
+      // 1 더해준다.
       results.first.count += 1;
+      await _dailyHabitCount?.put(results.first.id, results.first);
     }
+
+    _dailyHabitCount?.values.toList().forEach((element) {
+      print(element.id);
+      print(element.habitTypeId);
+      print(element.habitCountDate);
+      print(element.count);
+    });
   }
 
   List<HabitData>? getHabitData() {
     return _habitData?.values.toList();
+  }
+
+  // 각 날짜에 맞는 습관 데이터 리턴
+  String getDateHabitCount(HabitData habitData, DateTime dateTime) {
+    DateTime toTime = dateTime;
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+
+    var results = _dailyHabitCount?.values
+        .toList()
+        .where((element) => element.habitTypeId == habitData.id)
+        .where((element) => element.habitCountDate == startTime);
+
+    if (results!.isEmpty) {
+      return '0/${habitData.targetCount}';
+    } else {
+      if (results.first.count >= habitData.targetCount) {
+        return '달성\u{1F389}';
+      } else {
+        return '${results.first.count}/${habitData.targetCount}';
+      }
+    }
+  }
+
+  // 달성하지않은 습관정보 개수 리턴
+  int getNotAchieveHabitCount(DateTime dateTime) {
+    DateTime toTime = dateTime;
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+
+    var count = 0;
+    _habitData?.values.toList().forEach((habit) {
+      // 습관정보, 날짜에 맞는 습관 검색
+      var data = _dailyHabitCount?.values
+          .toList()
+          .where((element) => element.habitTypeId == habit.id)
+          .where((element) => element.habitCountDate == startTime);
+
+      // 만약 값이 데이터베이스에 있다면
+      if (data!.isNotEmpty) {
+        print(habit.targetCount);
+        if (data.first.count < habit.targetCount) {
+          count++;
+        }
+      } else {
+        count++;
+      }
+    });
+
+    return count;
+  }
+
+  // 달성하지않은 습관정보 개수 리턴
+  int getAchieveHabitCount(DateTime dateTime) {
+    DateTime toTime = dateTime;
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+
+    var count = 0;
+    _habitData?.values.toList().forEach((habit) {
+      // 습관정보, 날짜에 맞는 습관 검색
+      var data = _dailyHabitCount?.values
+          .toList()
+          .where((element) => element.habitTypeId == habit.id)
+          .where((element) => element.habitCountDate == startTime);
+
+      // 만약 값이 데이터베이스에 있다면
+      if (data!.isNotEmpty) {
+        if (data.first.count >= habit.targetCount) {
+          count++;
+        }
+      }
+    });
+
+    return count;
+  }
+
+  // 달성하지않은 습관정보 리턴
+  List<HabitData> getNotAchieveHabitList(DateTime dateTime) {
+    DateTime toTime = dateTime;
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+
+    List<HabitData> list = [];
+    _habitData?.values.toList().forEach((habit) {
+      // 습관정보, 날짜에 맞는 습관 검색
+      var data = _dailyHabitCount?.values
+          .toList()
+          .where((element) => element.habitTypeId == habit.id)
+          .where((element) => element.habitCountDate == startTime);
+
+      // 만약 값이 데이터베이스에 있다면
+      if (data!.isNotEmpty) {
+        if (data.first.count < habit.targetCount) {
+          list.add(habit);
+        }
+      } else {
+        list.add(habit);
+      }
+    });
+
+    return list;
+  }
+
+  // 달성한 습관정보 리턴
+  List<HabitData> getAchieveHabitList(DateTime dateTime) {
+    DateTime toTime = dateTime;
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+
+    List<HabitData> list = [];
+    _habitData?.values.toList().forEach((habit) {
+      // 습관정보, 날짜에 맞는 습관 검색
+      var data = _dailyHabitCount?.values
+          .toList()
+          .where((element) => element.habitTypeId == habit.id)
+          .where((element) => element.habitCountDate == startTime);
+
+      // 만약 값이 데이터베이스에 있다면
+      if (data!.isNotEmpty) {
+        if (data.first.count >= habit.targetCount) {
+          list.add(habit);
+        }
+      }
+    });
+
+    return list;
   }
 }
