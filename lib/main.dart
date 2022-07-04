@@ -36,10 +36,10 @@ class NavigationBar extends StatefulWidget {
 
 class _NavigationBarState extends State<NavigationBar> {
   int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = [
+  static final List<Widget> _widgetOptions = [
     HomeView(),
-    ChartView(),
-    SettingView(),
+    const ChartView(),
+    const SettingView(),
   ];
 
   void _onItemTapped(int index) {

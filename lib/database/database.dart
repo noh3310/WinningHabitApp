@@ -35,16 +35,16 @@ class DatabaseManager {
     _habitData = await Hive.openBox(_dataHabitString);
     _dailyHabitCount = await Hive.openBox(_dailyHabitCountString);
     // _dailyHabitCount?.deleteFromDisk();
-    //
-
-    getNotAchieveHabitCount(DateTime.now());
-    getAchieveHabitCount(DateTime.now());
+    // _habitData?.deleteFromDisk();
   }
 
   // 습관 추가
   Future<void> addHabit(String name, int count) async {
+    DateTime toTime = DateTime.now();
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+
     var habit =
-        HabitData(name: name, generateDate: DateTime.now(), targetCount: count);
+        HabitData(name: name, generateDate: startTime, targetCount: count);
     // key값이 잘못 들어갈 수 있으므로 중복되는 값이 있다면 key를 새로 발급
     while (true) {
       final temp = _habitData?.get(habit.id);
@@ -57,6 +57,13 @@ class DatabaseManager {
       }
     }
     await _habitData?.put(habit.id, habit);
+
+    _habitData?.values.toList().forEach((element) {
+      print(element.id);
+      print(element.name);
+      print(element.targetCount);
+      print(element.generateDate);
+    });
   }
 
   // 데일리 습관달성 데이터베이스 추가
@@ -89,8 +96,34 @@ class DatabaseManager {
     });
   }
 
-  List<HabitData>? getHabitData() {
-    return _habitData?.values.toList();
+  Future<void> minusDailyHabit(HabitData habitData) async {
+    DateTime toTime = DateTime.now();
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+
+    // 오늘 생성한 습관이 있는지 확인
+    var results = _dailyHabitCount?.values
+        .toList()
+        .where((element) => element.habitTypeId == habitData.id)
+        .where((element) => element.habitCountDate == startTime);
+
+    // 만약 습관 데이터가 없다면 데이터베이스에 새롭게 추가해줌
+    if (results!.isNotEmpty) {
+      // 1을 뺀다. 만약 targetCount보다 더 많이 달성할 경우 targetCount - 1을 리턴한다.
+      results.first.count = results.first.count <= habitData.targetCount
+          ? results.first.count - 1
+          : habitData.targetCount - 1;
+      // 0보다 작을 경우 0을 리턴한다.
+      results.first.count = results.first.count < 0 ? 0 : results.first.count;
+
+      await _dailyHabitCount?.put(results.first.id, results.first);
+    }
+
+    _dailyHabitCount?.values.toList().forEach((element) {
+      print(element.id);
+      print(element.habitTypeId);
+      print(element.habitCountDate);
+      print(element.count);
+    });
   }
 
   // 각 날짜에 맞는 습관 데이터 리턴
