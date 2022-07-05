@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:winning_habit/database/database.dart';
 
 class ChartView extends StatelessWidget {
   const ChartView({Key? key}) : super(key: key);
@@ -76,19 +77,20 @@ class _HabitChartState extends State<HabitChart> {
     );
   }
 
-  BarChartGroupData makeGroupData(int x,
-      double y, {
-        bool isTouched = false,
-        Color barColor = Colors.blueAccent,
-        double width = 22,
-        List<int> showTooltips = const [],
-      }) {
+  BarChartGroupData makeGroupData(
+    int x,
+    double y, {
+    bool isTouched = false,
+    Color barColor = Colors.blueAccent,
+    double width = 22,
+    List<int> showTooltips = const [],
+  }) {
     return BarChartGroupData(
       x: x,
       barRods: [
         BarChartRodData(
-          toY: isTouched ? y + 1 : y,
-          color: isTouched ? Colors.blue : barColor,
+          toY: y,
+          color: barColor,
           width: width,
           borderSide: isTouched
               ? const BorderSide(color: Colors.yellow, width: 1)
@@ -105,27 +107,48 @@ class _HabitChartState extends State<HabitChart> {
   }
 
   // 데이터 값
-  List<BarChartGroupData> showingGroups() =>
-      List.generate(7, (i) {
-        switch (i) {
-          case 0:
-            return makeGroupData(0, 100, isTouched: i == touchedIndex);
-          case 1:
-            return makeGroupData(1, 10, isTouched: i == touchedIndex);
-          case 2:
-            return makeGroupData(2, 70, isTouched: i == touchedIndex);
-          case 3:
-            return makeGroupData(3, 78, isTouched: i == touchedIndex);
-          case 4:
-            return makeGroupData(4, 30, isTouched: i == touchedIndex);
-          case 5:
-            return makeGroupData(5, 0, isTouched: i == touchedIndex);
-          case 6:
-            return makeGroupData(6, 1, isTouched: i == touchedIndex);
-          default:
-            return throw Error();
-        }
-      });
+  List<BarChartGroupData> showingGroups() {
+    var chartData = DatabaseManager.instance.getChartData();
+    return List.generate(7, (i) {
+      return makeGroupData(i, chartData[i].toDouble(), isTouched: i == touchedIndex);
+      // switch (i) {
+      //   case 0:
+      //     return makeGroupData(0, chartData[0], isTouched: i == touchedIndex);
+      //   case 1:
+      //     return makeGroupData(1, 0, isTouched: i == touchedIndex);
+      //   case 2:
+      //     return makeGroupData(2, 80, isTouched: i == touchedIndex);
+      //   case 3:
+      //     return makeGroupData(3, 50, isTouched: i == touchedIndex);
+      //   case 4:
+      //     return makeGroupData(4, 20, isTouched: i == touchedIndex);
+      //   case 5:
+      //     return makeGroupData(5, 1, isTouched: i == touchedIndex);
+      //   case 6:
+      //     return makeGroupData(6, 3, isTouched: i == touchedIndex);
+      //   default:
+      //     return throw Error();
+      // }
+      // switch (i) {
+      //   case 0:
+      //     return makeGroupData(0, chartData[0], isTouched: i == touchedIndex);
+      //   case 1:
+      //     return makeGroupData(1, chartData[1], isTouched: i == touchedIndex);
+      //   case 2:
+      //     return makeGroupData(2, chartData[2], isTouched: i == touchedIndex);
+      //   case 3:
+      //     return makeGroupData(3, chartData[3], isTouched: i == touchedIndex);
+      //   case 4:
+      //     return makeGroupData(4, chartData[4], isTouched: i == touchedIndex);
+      //   case 5:
+      //     return makeGroupData(5, chartData[5], isTouched: i == touchedIndex);
+      //   case 6:
+      //     return makeGroupData(6, chartData[6], isTouched: i == touchedIndex);
+      //   default:
+      //     return throw Error();
+      // }
+    });
+  }
 
   BarChartData mainBarData() {
     return BarChartData(
@@ -162,7 +185,7 @@ class _HabitChartState extends State<HabitChart> {
         ),
         // leftTitles: AxisTitles(
         //   sideTitles: SideTitles(
-        //     showTitles: false,
+        //     showTitles: true,
         //   ),
         // ),
       ),

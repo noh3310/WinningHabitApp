@@ -49,8 +49,8 @@ class DatabaseManager {
     DateTime toTime = DateTime.now();
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
 
-    var habit =
-        HabitData(name: name, generateDate: startTime, targetCount: count, color: color);
+    var habit = HabitData(
+        name: name, generateDate: startTime, targetCount: count, color: color);
     // key값이 잘못 들어갈 수 있으므로 중복되는 값이 있다면 key를 새로 발급
     while (true) {
       final temp = _habitData?.get(habit.id);
@@ -73,7 +73,8 @@ class DatabaseManager {
   }
 
   // 습관정보 수정
-  Future<void> modifyHabit(HabitData habitData, String name, int count, int color) async {
+  Future<void> modifyHabit(
+      HabitData habitData, String name, int count, int color) async {
     habitData.name = name;
     habitData.targetCount = count;
     habitData.color = color;
@@ -110,6 +111,7 @@ class DatabaseManager {
     });
   }
 
+  // 습관정보 빼기
   Future<void> minusDailyHabit(HabitData habitData) async {
     DateTime toTime = DateTime.now();
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
@@ -263,19 +265,64 @@ class DatabaseManager {
   }
 
   Future<void> removeHabitData(HabitData? habitData) async {
-    if (habitData == null) { return; }
+    if (habitData == null) {
+      return;
+    }
 
-    _dailyHabitCount?.values.toList()
+    _dailyHabitCount?.values
+        .toList()
         .where((element) => element.habitTypeId == habitData.id)
         .forEach((element) async {
-          print(element.id);
-          print(element.habitTypeId);
-          print(element.count);
-          print(element.habitCountDate);
+      print(element.id);
+      print(element.habitTypeId);
+      print(element.count);
+      print(element.habitCountDate);
 
-          await _dailyHabitCount?.delete(element.id);
-        });
+      await _dailyHabitCount?.delete(element.id);
+    });
 
     _habitData?.delete(habitData.id);
+  }
+
+  // 차트 데이터 호출
+  List<int> getChartData() {
+    DateTime toTime = DateTime.now();
+    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+    // DateTime.now().subtract(Duration(days:1));
+
+    List<int> result = [];
+    for (int i = 6; i >= 0; i--) {
+      final findDate = startTime.subtract(Duration(days: i));
+      final todayDatas = _habitData?.values
+          .toList()
+          .where((element) => element.generateDate.compareTo(findDate) <= 0)
+          .toList();
+
+      int count = 0;
+      todayDatas?.forEach((habit) {
+        final todayHabit = _dailyHabitCount?.values
+            .toList()
+            .where((element) => element.habitCountDate == findDate)
+            .where((element) => element.habitTypeId == habit.id)
+            .toList();
+
+        if (todayHabit != null && todayHabit.isNotEmpty) {
+          // 습관달성한 경우 1 더해줌
+          if (todayHabit.first.count >= habit.targetCount) {
+            count++;
+          }
+        }
+      });
+
+      if (count > 0 && todayDatas != null && todayDatas.isNotEmpty) {
+        double value = count.toDouble() / todayDatas.length.toDouble() * 100.0;
+        result.add(value.toInt());
+        // result.add(double(count)! / double(todayDatas!.length) * 100.0);
+      } else {
+        result.add(0);
+      }
+    }
+
+    return result;
   }
 }
