@@ -17,9 +17,9 @@ class DailyHabitCountAdapter extends TypeAdapter<DailyHabitCount> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return DailyHabitCount(
-      id: fields[0] as String,
-      habitTypeId: fields[1] as String,
+      id: fields[0] as String?,
       habitCountDate: fields[2] as DateTime,
+      habitTypeId: fields[1] as String,
       count: fields[3] as int?,
     );
   }

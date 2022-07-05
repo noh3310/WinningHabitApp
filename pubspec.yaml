@@ -43,6 +43,7 @@ dependencies:
   hive_flutter: ^1.1.0
   uuid: ^3.0.6
   rxdart: ^0.27.4
+  get:
 
 dev_dependencies:
   flutter_test:

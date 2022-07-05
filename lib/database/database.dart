@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:winning_habit/database/daily_habit_count.dart';
 import 'package:winning_habit/database/habit_data.dart';
@@ -38,13 +40,17 @@ class DatabaseManager {
     // _habitData?.deleteFromDisk();
   }
 
+  Box<HabitData>? getAllHabitData() {
+    return _habitData;
+  }
+
   // 습관 추가
-  Future<void> addHabit(String name, int count) async {
+  Future<void> addHabit(String name, int count, int color) async {
     DateTime toTime = DateTime.now();
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
 
     var habit =
-        HabitData(name: name, generateDate: startTime, targetCount: count);
+        HabitData(name: name, generateDate: startTime, targetCount: count, color: color);
     // key값이 잘못 들어갈 수 있으므로 중복되는 값이 있다면 key를 새로 발급
     while (true) {
       final temp = _habitData?.get(habit.id);
@@ -64,6 +70,14 @@ class DatabaseManager {
       print(element.targetCount);
       print(element.generateDate);
     });
+  }
+
+  // 습관정보 수정
+  Future<void> modifyHabit(HabitData habitData, String name, int count, int color) async {
+    habitData.name = name;
+    habitData.targetCount = count;
+    habitData.color = color;
+    await _habitData?.put(habitData.id, habitData);
   }
 
   // 데일리 습관달성 데이터베이스 추가
@@ -246,5 +260,22 @@ class DatabaseManager {
     });
 
     return list;
+  }
+
+  Future<void> removeHabitData(HabitData? habitData) async {
+    if (habitData == null) { return; }
+
+    _dailyHabitCount?.values.toList()
+        .where((element) => element.habitTypeId == habitData.id)
+        .forEach((element) async {
+          print(element.id);
+          print(element.habitTypeId);
+          print(element.count);
+          print(element.habitCountDate);
+
+          await _dailyHabitCount?.delete(element.id);
+        });
+
+    _habitData?.delete(habitData.id);
   }
 }

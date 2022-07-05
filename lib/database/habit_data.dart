@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,6 +21,9 @@ class HabitData {
   @HiveField(3)
   int targetCount;
 
-  HabitData({String? id, required this.name, required this.generateDate, required this.targetCount})
+  @HiveField(4)
+  int color;
+
+  HabitData({String? id, required this.name, required this.generateDate, required this.targetCount, required this.color})
   : id = id ?? _uuid.v4() ;
 }

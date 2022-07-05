@@ -3,13 +3,21 @@ import 'package:flutter/rendering.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+
 import 'package:winning_habit/database/database.dart';
 import 'package:winning_habit/view/home/add_habit.dart';
 import 'package:winning_habit/view_model/view_model.dart';
+import '../../database/habit_data.dart';
+import 'package:get/get.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   HomeView({Key? key}) : super(key: key);
 
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   ViewModel viewModel = ViewModel.instance;
 
   @override
@@ -28,11 +36,14 @@ class HomeView extends StatelessWidget {
           ),
           actions: [
             IconButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                String text = await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (_) => AddHabit(state: AddHabitState.CREATE)));
+                setState(() {
+                  // print(text);
+                });
               },
               icon: const Icon(Icons.add),
               color: Colors.black,
@@ -72,17 +83,18 @@ class _CalendarViewState extends State<CalendarView> {
         builder: (context, snapshot) {
           return TableCalendar(
             locale: 'ko-KR',
-            // 시작일이랑 마감일을 수정해줘야한다.
+            // TODO: 시작일이랑 마감일을 수정해줘야한다.
             firstDay: DateTime.utc(2010, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),
             headerStyle: const HeaderStyle(
               titleCentered: true,
               formatButtonVisible: false,
             ),
-            focusedDay: snapshot.data ?? DateTime.now(),
+            focusedDay: snapshot.data!,
             calendarFormat: CalendarFormat.week,
             onDaySelected: (selectedDay, focusedDay) {
               viewModel.setDate(selectedDay);
+              // setState(() {});
             },
             selectedDayPredicate: (day) {
               return isSameDay(snapshot.data!, day);
@@ -133,15 +145,18 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                   onPressed: (context) async {
                     DateTime now = DateTime.now();
                     DateTime date = DateTime(now.year, now.month, now.day);
-                    DateTime snapShotTime = DateTime(snapshot.data!.year, snapshot.data!.month, snapshot.data!.day);
+                    DateTime snapShotTime = DateTime(snapshot.data!.year,
+                        snapshot.data!.month, snapshot.data!.day);
                     if (snapShotTime == date) {
                       await DatabaseManager.instance.minusDailyHabit(indexPath
-                          .section ==
-                          0
+                                  .section ==
+                              0
                           ? DatabaseManager.instance.getNotAchieveHabitList(
-                          snapshot.data ?? DateTime.now())[indexPath.item]
+                              snapshot.data ?? DateTime.now())[indexPath.item]
                           : DatabaseManager.instance.getAchieveHabitList(
-                          snapshot.data ?? DateTime.now())[indexPath.item]);
+                              snapshot.data ?? DateTime.now())[indexPath.item]);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
                     }
                     setState(() {});
                   },
@@ -157,7 +172,8 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                   onPressed: (context) async {
                     DateTime now = DateTime.now();
                     DateTime date = DateTime(now.year, now.month, now.day);
-                    DateTime snapShotTime = DateTime(snapshot.data!.year, snapshot.data!.month, snapshot.data!.day);
+                    DateTime snapShotTime = DateTime(snapshot.data!.year,
+                        snapshot.data!.month, snapshot.data!.day);
                     if (snapShotTime == date) {
                       await DatabaseManager.instance.addDailyHabit(indexPath
                                   .section ==
@@ -166,6 +182,8 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                               snapshot.data ?? DateTime.now())[indexPath.item]
                           : DatabaseManager.instance.getAchieveHabitList(
                               snapshot.data ?? DateTime.now())[indexPath.item]);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
                     }
                     setState(() {});
                   },
@@ -192,7 +210,20 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                       : DatabaseManager.instance.getAchieveHabitList(
                           snapshot.data ?? DateTime.now())[indexPath.item],
                   snapshot.data ?? DateTime.now()),
-              color: Colors.blueAccent,
+              color: indexPath.section == 0
+                  ? Color(DatabaseManager.instance
+                      .getNotAchieveHabitList(
+                          snapshot.data ?? DateTime.now())[indexPath.item]
+                      .color)
+                  : Color(DatabaseManager.instance
+                      .getAchieveHabitList(
+                          snapshot.data ?? DateTime.now())[indexPath.item]
+                      .color),
+              habitData: indexPath.section == 0
+                  ? DatabaseManager.instance.getNotAchieveHabitList(
+                      snapshot.data ?? DateTime.now())[indexPath.item]
+                  : DatabaseManager.instance.getAchieveHabitList(
+                      snapshot.data ?? DateTime.now())[indexPath.item],
             ),
           );
         });
@@ -238,26 +269,43 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
   }
 }
 
-class TableViewCell extends StatelessWidget {
+class TableViewCell extends StatefulWidget {
   String title;
   String percent;
   Color color;
+  HabitData habitData;
 
   TableViewCell(
       {Key? key,
       required this.title,
       required this.percent,
-      required this.color})
+      required this.color,
+      required this.habitData})
       : super(key: key);
 
   @override
+  State<TableViewCell> createState() => _TableViewCellState();
+}
+
+class _TableViewCellState extends State<TableViewCell> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        String text = await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => AddHabit(state: AddHabitState.MODIFY)));
+                builder: (_) => AddHabit(
+                      state: AddHabitState.MODIFY,
+                      habitData: widget.habitData,
+                    )));
+        _TableViewState? parent = context.findAncestorStateOfType<_TableViewState>();
+        parent?.setState(() {
+          print('setState 호출');
+        });
+        setState(() {
+          print(text);
+        });
       },
       child: Padding(
         padding: const EdgeInsets.all(7.0),
@@ -265,26 +313,42 @@ class TableViewCell extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: color,
+            color: widget.color,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: Text(
-                  title,
-                  style: const TextStyle(
+                  widget.title,
+                  style: TextStyle(
                     fontSize: 20.0,
+                    color: getTextColor(widget.color),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 6.0),
-              Text(percent),
+              Text(
+                widget.percent,
+                style: TextStyle(
+                  color: getTextColor(widget.color),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Color getTextColor(Color color) {
+    final sum = color.red + color.green + color.blue;
+    final average = sum / 3;
+    if (average > 255 / 2) {
+      return Colors.black;
+    } else {
+      return Colors.white;
+    }
   }
 }

@@ -21,13 +21,14 @@ class HabitDataAdapter extends TypeAdapter<HabitData> {
       name: fields[1] as String,
       generateDate: fields[2] as DateTime,
       targetCount: fields[3] as int,
+      color: fields[4] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, HabitData obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class HabitDataAdapter extends TypeAdapter<HabitData> {
       ..writeByte(2)
       ..write(obj.generateDate)
       ..writeByte(3)
-      ..write(obj.targetCount);
+      ..write(obj.targetCount)
+      ..writeByte(4)
+      ..write(obj.color);
   }
 
   @override

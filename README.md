@@ -24,6 +24,7 @@
 - hive: 2.2.3
 - hive_flutter: 1.1.0
 - uuid: 3.0.6
+- rxdart: 0.27.4
 
 ## Issue
 - StatefulWidget의 특정 오브젝트의 상태를 변경하기 위해서는 setState(()) {};를 사용해야 한다.
@@ -35,3 +36,9 @@
   ```Dart
   '삭제할 Box'.deleteFromDisk();
   ```
+- 부모위젯의 setState 메서드를 호출해야 하는 경우가 있었다.
+  - 아래 코드를 작성하고 실행하면 된다.
+    ```Dart
+    '부모 위젯' parent = context.findAncestorStateOfType<'부모 위젯'>();
+    parent.setState(() {});
+```
