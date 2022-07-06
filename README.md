@@ -68,12 +68,23 @@
   타입이 존재하지 않았다. UUID타입을 사용해 각 데이터를 구분했다.
   
 ## 실행화면
-<img src="[https://user-images.githubusercontent.com/26789278/173942391-d1e9084f-4d98-4c2a-9a2f-6c9edef142c9.png](https://user-images.githubusercontent.com/26789278/177654448-0ccfc97f-7c0b-4c13-9115-b366f345d938.png)"  width="200" height="410">
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 30 29](https://user-images.githubusercontent.com/26789278/177654448-0ccfc97f-7c0b-4c13-9115-b366f345d938.png)
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 30 33](https://user-images.githubusercontent.com/26789278/177654460-cda107ab-dcfe-4671-9879-9f1842f2492b.png)
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 30 44](https://user-images.githubusercontent.com/26789278/177654461-a8c20757-2875-4313-a5d2-08721cde51d6.png)
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 30 47](https://user-images.githubusercontent.com/26789278/177654464-d34b1cd5-6c7d-4652-abaf-e79f90e7f4de.png)
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 30 50](https://user-images.githubusercontent.com/26789278/177654465-18974382-5bf0-456d-9a5d-c8097fa7381b.png)
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 31 02](https://user-images.githubusercontent.com/26789278/177654467-36c80331-a3cc-4992-900b-76b45dba0555.png)
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 31 07](https://user-images.githubusercontent.com/26789278/177654470-9b4ea414-f361-4072-8a3c-5e7dac3e82ec.png)
-![Simulator Screen Shot - iPhone 13 Pro Max - 2022-07-07 at 07 31 20](https://user-images.githubusercontent.com/26789278/177654472-a5143e00-b426-41c3-8436-a5f58141451c.png)
+
+### 홈화면
+|홈화면|습관달성 & 습관취소|
+|-|-|
+|<img src="https://user-images.githubusercontent.com/26789278/177654448-0ccfc97f-7c0b-4c13-9115-b366f345d938.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177654472-a5143e00-b426-41c3-8436-a5f58141451c.png"  width="200" height="410">|
+
+### 습관추가화면
+|습관추가|습관수정|
+|-|-|
+|<img src="https://user-images.githubusercontent.com/26789278/177654460-cda107ab-dcfe-4671-9879-9f1842f2492b.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177654461-a8c20757-2875-4313-a5d2-08721cde51d6.png"  width="200" height="410">|
+  
+### 통계화면
+|통계화면|
+|-|
+|<img src="https://user-images.githubusercontent.com/26789278/177654464-d34b1cd5-6c7d-4652-abaf-e79f90e7f4de.png"  width="200" height="410">|
+  
+### 설정화면
+|설정화면|개인정보 처리방침|오픈소스 라이스|
+|-|-|-|
+|<img src="https://user-images.githubusercontent.com/26789278/177654465-18974382-5bf0-456d-9a5d-c8097fa7381b.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177654467-36c80331-a3cc-4992-900b-76b45dba0555.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177654470-9b4ea414-f361-4072-8a3c-5e7dac3e82ec.png"  width="200" height="410">|
