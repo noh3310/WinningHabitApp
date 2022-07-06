@@ -23,9 +23,9 @@ class SettingView extends StatelessWidget {
           children: [
             TextButton(
               onPressed: () {
-                Get.to(
+                Get.to(() =>
                     WebViewWidget(state: UrlState.privacyPolicy));
-              },
+                },
               child: const Text(
                 '개인정보 처리방침',
                 style: TextStyle(fontSize: 15, color: Colors.black),
@@ -34,7 +34,7 @@ class SettingView extends StatelessWidget {
             const SizedBox(height: 5),
             TextButton(
               onPressed: () {
-                Get.to(
+                Get.to(() =>
                     WebViewWidget(state: UrlState.openSourceLicense));
               },
               child: const Text(
