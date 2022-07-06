@@ -86,12 +86,14 @@ class _InputHabitDataState extends State<InputHabitData> {
                 hintText: '습관 이름을 입력하세요.',
                 inputType: TextInputType.text,
                 controller: habitName,
+                maxLength: 20,
               ),
               CustomTextField(
                 labelText: '목표 횟수(최대 100회)',
                 hintText: '목표 횟수를 입력하세요.',
                 inputType: TextInputType.number,
                 controller: targetCount,
+                maxLength: 3,
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -213,7 +215,8 @@ class CustomTextField extends StatelessWidget {
       required this.hintText,
       required this.inputType,
       required this.controller,
-      this.maxLines})
+      this.maxLines,
+      this.maxLength})
       : super(key: key);
 
   String labelText;
@@ -221,6 +224,7 @@ class CustomTextField extends StatelessWidget {
   TextInputType? inputType;
   TextEditingController controller;
   int? maxLines;
+  int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -246,6 +250,13 @@ class CustomTextField extends StatelessWidget {
         ),
         keyboardType: inputType,
         maxLines: maxLines == null ? null : 1,
+        maxLength: maxLength,
+        onChanged: (String str) {
+          // 최대값을 100으로 설정
+          if (str.length >= 3 && inputType == TextInputType.number) {
+            controller.text = '100';
+          }
+        },
       ),
     );
   }
