@@ -30,44 +30,39 @@ class AddHabit extends StatelessWidget {
         elevation: 0.0,
         backgroundColor: Colors.white24,
       ),
-      body: InputHabitData(state: state, habitData: habitData),
+      body: SafeArea(
+        child: InputHabitData(state: state, habitData: habitData),
+      ),
     );
   }
 }
 
 class InputHabitData extends StatefulWidget {
-  InputHabitData({Key? key, required this.state, this.habitData}) : super(key: key);
+  InputHabitData({Key? key, required this.state, this.habitData})
+      : super(key: key);
 
   AddHabitState state;
   HabitData? habitData;
 
   @override
-  State<InputHabitData> createState() => _InputHabitDataState(state: state, habitData: habitData);
+  State<InputHabitData> createState() =>
+      _InputHabitDataState(state: state, habitData: habitData);
 }
+
 class _InputHabitDataState extends State<InputHabitData> {
   _InputHabitDataState({required this.state, this.habitData}) {
-    if (habitData == null) {
-      print('null');
-    } else {
-      print(habitData?.id);
-      print(habitData?.name);
-      print(habitData?.color);
-      print(habitData?.generateDate);
-    }
-    if (habitData != null) {
-      habitName.text = habitData == null ? '' : habitData!.name;
-      targetCount.text = habitData == null ? '' : habitData!.targetCount.toString();
-      currentColor = Color(habitData!.color);
-      pickerColor = Color(habitData!.color);
-    }
+    habitName = TextEditingController(text: habitData?.name ?? '');
+    targetCount = TextEditingController(text: habitData?.targetCount.toString() ?? '');
+    pickerColor = Color(habitData?.color ?? 0xff000000);
+    currentColor = Color(habitData?.color ?? 0xff000000);
   }
 
   // create some values
-  Color pickerColor = Colors.black;// Color(0xff443a49);
-  Color currentColor = Colors.black;//Color(0xff443a49);
+  Color pickerColor = Colors.black;
+  Color currentColor = Colors.black;
 
-  TextEditingController habitName = TextEditingController();
-  TextEditingController targetCount = TextEditingController();
+  late TextEditingController habitName = TextEditingController();
+  late TextEditingController targetCount = TextEditingController();
 
   AddHabitState state;
   HabitData? habitData;
@@ -97,18 +92,6 @@ class _InputHabitDataState extends State<InputHabitData> {
                 hintText: '목표 횟수를 입력하세요.',
                 inputType: TextInputType.number,
                 controller: targetCount,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: const [
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  Text(
-                    '습관 색',
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                ],
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -145,7 +128,7 @@ class _InputHabitDataState extends State<InputHabitData> {
                                     child: const Text('선택'),
                                     onPressed: () {
                                       setState(
-                                              () => currentColor = pickerColor);
+                                          () => currentColor = pickerColor);
                                       Navigator.of(context).pop();
                                     },
                                   ),
@@ -161,62 +144,67 @@ class _InputHabitDataState extends State<InputHabitData> {
             ],
           ),
         ),
-        const Spacer(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Visibility(
-              visible: state == AddHabitState.MODIFY ? true : false,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    DatabaseManager.instance.removeHabitData(habitData);
-                    Navigator.pop(context, '습관을 삭제했습니다.');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.redAccent,
-                    elevation: 0.0,
+        SizedBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Visibility(
+                visible: state == AddHabitState.MODIFY ? true : false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      DatabaseManager.instance.removeHabitData(habitData);
+                      Navigator.pop(context, '습관을 삭제했습니다.');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.redAccent,
+                      elevation: 0.0,
+                    ),
+                    child: const Text('삭제하기'),
                   ),
-                  child: const Text('삭제하기'),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (state == AddHabitState.CREATE) {
-                    DatabaseManager manager = DatabaseManager();
-                    // TODO: 입력값 제대로 입력했는지 체크하는 기능 추가해야함
-                    manager.addHabit(
-                        habitName.text, int.parse(targetCount.text),
-                        currentColor.value);
-                    Navigator.pop(context, '습관을 추가했습니다.');
-                  } else {  // 업데이트
-                    DatabaseManager manager = DatabaseManager();
-                    // TODO: 입력값 제대로 입력했는지 체크하는 기능 추가해야함
-                    manager.modifyHabit(
-                        habitData!, habitName.text, int.parse(targetCount.text),
-                        currentColor.value);
-                    Navigator.pop(context, '습관을 수정했습니다.');
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blueAccent,
-                  elevation: 0.0,
-                ),
-                child: Text(state == AddHabitState.CREATE ? '추가하기' : '수정하기'),
-              ), // Padding
-            ),
-            const SizedBox(height: 20.0),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    // 입력값 제대로 작성했는지 체크
+                    if (int.tryParse(targetCount.text) == null ||
+                        habitName.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('입력값이 잘못되었습니다.'),
+                        duration: Duration(seconds: 1),
+                      ));
+                    } else {
+                      if (state == AddHabitState.CREATE) {
+                        DatabaseManager manager = DatabaseManager();
+                        manager.addHabit(habitName.text,
+                            int.parse(targetCount.text), currentColor.value);
+                        Navigator.pop(context, '습관을 추가했습니다.');
+                      } else {
+                        // 업데이트
+                        DatabaseManager manager = DatabaseManager();
+                        manager.modifyHabit(habitData!, habitName.text,
+                            int.parse(targetCount.text), currentColor.value);
+                        Navigator.pop(context, '습관을 수정했습니다.');
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blueAccent,
+                    elevation: 0.0,
+                  ),
+                  child: Text(state == AddHabitState.CREATE ? '추가하기' : '수정하기'),
+                ), // Padding
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 }
-
 
 class CustomTextField extends StatelessWidget {
   CustomTextField(
@@ -224,13 +212,15 @@ class CustomTextField extends StatelessWidget {
       required this.labelText,
       required this.hintText,
       required this.inputType,
-      required this.controller})
+      required this.controller,
+      this.maxLines})
       : super(key: key);
 
   String labelText;
   String hintText;
-  TextInputType inputType;
+  TextInputType? inputType;
   TextEditingController controller;
+  int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -255,6 +245,7 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         keyboardType: inputType,
+        maxLines: maxLines == null ? null : 1,
       ),
     );
   }

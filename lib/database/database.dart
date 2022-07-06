@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:winning_habit/database/daily_habit_count.dart';
 import 'package:winning_habit/database/habit_data.dart';
@@ -63,13 +61,6 @@ class DatabaseManager {
       }
     }
     await _habitData?.put(habit.id, habit);
-
-    _habitData?.values.toList().forEach((element) {
-      print(element.id);
-      print(element.name);
-      print(element.targetCount);
-      print(element.generateDate);
-    });
   }
 
   // 습관정보 수정
@@ -102,13 +93,6 @@ class DatabaseManager {
       results.first.count += 1;
       await _dailyHabitCount?.put(results.first.id, results.first);
     }
-
-    _dailyHabitCount?.values.toList().forEach((element) {
-      print(element.id);
-      print(element.habitTypeId);
-      print(element.habitCountDate);
-      print(element.count);
-    });
   }
 
   // 습관정보 빼기
@@ -122,7 +106,7 @@ class DatabaseManager {
         .where((element) => element.habitTypeId == habitData.id)
         .where((element) => element.habitCountDate == startTime);
 
-    // 만약 습관 데이터가 없다면 데이터베이스에 새롭게 추가해줌
+    // 만약 습관 데이터가 있다면 1 뺀다
     if (results!.isNotEmpty) {
       // 1을 뺀다. 만약 targetCount보다 더 많이 달성할 경우 targetCount - 1을 리턴한다.
       results.first.count = results.first.count <= habitData.targetCount
@@ -133,13 +117,6 @@ class DatabaseManager {
 
       await _dailyHabitCount?.put(results.first.id, results.first);
     }
-
-    _dailyHabitCount?.values.toList().forEach((element) {
-      print(element.id);
-      print(element.habitTypeId);
-      print(element.habitCountDate);
-      print(element.count);
-    });
   }
 
   // 각 날짜에 맞는 습관 데이터 리턴
@@ -150,7 +127,8 @@ class DatabaseManager {
     var results = _dailyHabitCount?.values
         .toList()
         .where((element) => element.habitTypeId == habitData.id)
-        .where((element) => element.habitCountDate == startTime);
+        .where((element) => element.habitCountDate == startTime)
+        .toList();
 
     if (results!.isEmpty) {
       return '0/${habitData.targetCount}';
@@ -169,7 +147,10 @@ class DatabaseManager {
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
 
     var count = 0;
-    _habitData?.values.toList().forEach((habit) {
+    _habitData?.values
+        .where((element) => element.generateDate.compareTo(startTime) <= 0)
+        .toList()
+        .forEach((habit) {
       // 습관정보, 날짜에 맞는 습관 검색
       var data = _dailyHabitCount?.values
           .toList()
@@ -178,7 +159,6 @@ class DatabaseManager {
 
       // 만약 값이 데이터베이스에 있다면
       if (data!.isNotEmpty) {
-        print(habit.targetCount);
         if (data.first.count < habit.targetCount) {
           count++;
         }
@@ -190,13 +170,16 @@ class DatabaseManager {
     return count;
   }
 
-  // 달성하지않은 습관정보 개수 리턴
+  // 달성한 습관정보 개수 리턴
   int getAchieveHabitCount(DateTime dateTime) {
     DateTime toTime = dateTime;
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
 
     var count = 0;
-    _habitData?.values.toList().forEach((habit) {
+    _habitData?.values
+        .where((element) => element.generateDate.compareTo(startTime) <= 0)
+        .toList()
+        .forEach((habit) {
       // 습관정보, 날짜에 맞는 습관 검색
       var data = _dailyHabitCount?.values
           .toList()
@@ -220,7 +203,10 @@ class DatabaseManager {
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
 
     List<HabitData> list = [];
-    _habitData?.values.toList().forEach((habit) {
+    _habitData?.values
+        .where((element) => element.generateDate.compareTo(startTime) <= 0)
+        .toList()
+        .forEach((habit) {
       // 습관정보, 날짜에 맞는 습관 검색
       var data = _dailyHabitCount?.values
           .toList()
@@ -246,7 +232,10 @@ class DatabaseManager {
     DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
 
     List<HabitData> list = [];
-    _habitData?.values.toList().forEach((habit) {
+    _habitData?.values
+        .where((element) => element.generateDate.compareTo(startTime) <= 0)
+        .toList()
+        .forEach((habit) {
       // 습관정보, 날짜에 맞는 습관 검색
       var data = _dailyHabitCount?.values
           .toList()
@@ -273,11 +262,6 @@ class DatabaseManager {
         .toList()
         .where((element) => element.habitTypeId == habitData.id)
         .forEach((element) async {
-      print(element.id);
-      print(element.habitTypeId);
-      print(element.count);
-      print(element.habitCountDate);
-
       await _dailyHabitCount?.delete(element.id);
     });
 

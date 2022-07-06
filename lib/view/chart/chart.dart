@@ -11,7 +11,7 @@ class ChartView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('통계', style: TextStyle(color: Colors.black)),
+        title: const Text('주간 달성률(%)', style: TextStyle(color: Colors.black)),
         elevation: 0.0,
         backgroundColor: Colors.white24,
       ),
@@ -47,13 +47,13 @@ class _HabitChartState extends State<HabitChart> {
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                const Text(
-                  '주간 달성률(%)',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
+                // const Text(
+                //   '주간 달성률(%)',
+                //   style: TextStyle(
+                //       color: Colors.black,
+                //       fontSize: 24,
+                //       fontWeight: FontWeight.bold),
+                // ),
                 const SizedBox(
                   height: 30.0,
                 ),
