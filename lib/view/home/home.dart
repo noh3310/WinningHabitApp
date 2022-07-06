@@ -111,7 +111,8 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    return GetX<GetViewModel>(builder: (date) {
+    return GetX<GetViewModel>(
+        builder: (date) {
       DateTime now = DateTime.now();
       DateTime nowDate = DateTime(now.year, now.month, now.day);
       final dateData = date.dateTime.value; //.data ?? nowDate;
@@ -139,8 +140,7 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                       snackPosition: SnackPosition.TOP,
                       animationDuration: const Duration(seconds: 1),
                       duration: const Duration(seconds: 1),
-                      backgroundColor: Colors.white
-                  );
+                      backgroundColor: Colors.white);
                 }
                 setState(() {});
               },
@@ -163,8 +163,7 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                       snackPosition: SnackPosition.TOP,
                       animationDuration: const Duration(seconds: 1),
                       duration: const Duration(seconds: 1),
-                      backgroundColor: Colors.white
-                  );
+                      backgroundColor: Colors.white);
                 }
                 setState(() {});
               },

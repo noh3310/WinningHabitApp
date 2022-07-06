@@ -25,6 +25,8 @@
 - hive_flutter: 1.1.0
 - uuid: 3.0.6
 - rxdart: 0.27.4
+- webview_flutter: 3.0.4
+- get: 4.6.5
 
 ## Issue
 - StatefulWidget의 특정 오브젝트의 상태를 변경하기 위해서는 setState(()) {};를 사용해야 한다.
@@ -41,4 +43,4 @@
     ```Dart
     '부모 위젯' parent = context.findAncestorStateOfType<'부모 위젯'>();
     parent.setState(() {});
-```
+    ```
