@@ -6,6 +6,8 @@ import 'package:uuid/uuid.dart';
 const _dataHabitString = 'dataHabit';
 const _dailyHabitCountString = 'dailyHabitCount';
 
+enum AchieveState { achieve, notAchieve }
+
 class DatabaseManager {
   // Private한 생성자 생성
   DatabaseManager._privateConstructor();
@@ -20,6 +22,10 @@ class DatabaseManager {
 
   late Box<HabitData>? _habitData;
   late Box<DailyHabitCount>? _dailyHabitCount;
+
+  DateTime getStartTime(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day);
+  }
 
   // 초기화
   Future<void> init() async {
@@ -38,14 +44,9 @@ class DatabaseManager {
     // _habitData?.deleteFromDisk();
   }
 
-  Box<HabitData>? getAllHabitData() {
-    return _habitData;
-  }
-
   // 습관 추가
   Future<void> addHabit(String name, int count, int color) async {
-    DateTime toTime = DateTime.now();
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+    DateTime startTime = getStartTime(DateTime.now());
 
     var habit = HabitData(
         name: name, generateDate: startTime, targetCount: count, color: color);
@@ -74,8 +75,7 @@ class DatabaseManager {
 
   // 데일리 습관달성 데이터베이스 추가
   Future<void> addDailyHabit(HabitData habitData) async {
-    DateTime toTime = DateTime.now();
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+    DateTime startTime = getStartTime(DateTime.now());
 
     // 오늘 생성한 습관이 있는지 확인
     var results = _dailyHabitCount?.values
@@ -97,8 +97,7 @@ class DatabaseManager {
 
   // 습관정보 빼기
   Future<void> minusDailyHabit(HabitData habitData) async {
-    DateTime toTime = DateTime.now();
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+    DateTime startTime = getStartTime(DateTime.now());
 
     // 오늘 생성한 습관이 있는지 확인
     var results = _dailyHabitCount?.values
@@ -121,8 +120,7 @@ class DatabaseManager {
 
   // 각 날짜에 맞는 습관 데이터 리턴
   String getDateHabitCount(HabitData habitData, DateTime dateTime) {
-    DateTime toTime = dateTime;
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+    DateTime startTime = getStartTime(dateTime);
 
     var results = _dailyHabitCount?.values
         .toList()
@@ -143,95 +141,31 @@ class DatabaseManager {
 
   // 달성하지않은 습관정보 개수 리턴
   int getNotAchieveHabitCount(DateTime dateTime) {
-    DateTime toTime = dateTime;
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
-
-    var count = 0;
-    _habitData?.values
-        .where((element) => element.generateDate.compareTo(startTime) <= 0)
-        .toList()
-        .forEach((habit) {
-      // 습관정보, 날짜에 맞는 습관 검색
-      var data = _dailyHabitCount?.values
-          .toList()
-          .where((element) => element.habitTypeId == habit.id)
-          .where((element) => element.habitCountDate == startTime);
-
-      // 만약 값이 데이터베이스에 있다면
-      if (data!.isNotEmpty) {
-        if (data.first.count < habit.targetCount) {
-          count++;
-        }
-      } else {
-        count++;
-      }
-    });
-
-    return count;
+    return getNotAchieveHabitList(dateTime).length;
   }
 
   // 달성한 습관정보 개수 리턴
   int getAchieveHabitCount(DateTime dateTime) {
-    DateTime toTime = dateTime;
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
-
-    var count = 0;
-    _habitData?.values
-        .where((element) => element.generateDate.compareTo(startTime) <= 0)
-        .toList()
-        .forEach((habit) {
-      // 습관정보, 날짜에 맞는 습관 검색
-      var data = _dailyHabitCount?.values
-          .toList()
-          .where((element) => element.habitTypeId == habit.id)
-          .where((element) => element.habitCountDate == startTime);
-
-      // 만약 값이 데이터베이스에 있다면
-      if (data!.isNotEmpty) {
-        if (data.first.count >= habit.targetCount) {
-          count++;
-        }
-      }
-    });
-
-    return count;
+    return getAchieveHabitList(dateTime).length;
   }
 
   // 달성하지않은 습관정보 리턴
   List<HabitData> getNotAchieveHabitList(DateTime dateTime) {
-    DateTime toTime = dateTime;
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
-
-    List<HabitData> list = [];
-    _habitData?.values
-        .where((element) => element.generateDate.compareTo(startTime) <= 0)
-        .toList()
-        .forEach((habit) {
-      // 습관정보, 날짜에 맞는 습관 검색
-      var data = _dailyHabitCount?.values
-          .toList()
-          .where((element) => element.habitTypeId == habit.id)
-          .where((element) => element.habitCountDate == startTime);
-
-      // 만약 값이 데이터베이스에 있다면
-      if (data!.isNotEmpty) {
-        if (data.first.count < habit.targetCount) {
-          list.add(habit);
-        }
-      } else {
-        list.add(habit);
-      }
-    });
-
-    return list;
+    return getHabitList(dateTime, AchieveState.notAchieve);
   }
 
   // 달성한 습관정보 리턴
   List<HabitData> getAchieveHabitList(DateTime dateTime) {
-    DateTime toTime = dateTime;
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
+    return getHabitList(dateTime, AchieveState.achieve);
+  }
 
-    List<HabitData> list = [];
+  // 습관정보 리턴
+  List<HabitData> getHabitList(DateTime dateTime, AchieveState achieveState) {
+    DateTime startTime = getStartTime(dateTime);
+
+    List<HabitData> achieveList = [];
+    List<HabitData> notAchieveList = [];
+
     _habitData?.values
         .where((element) => element.generateDate.compareTo(startTime) <= 0)
         .toList()
@@ -242,15 +176,24 @@ class DatabaseManager {
           .where((element) => element.habitTypeId == habit.id)
           .where((element) => element.habitCountDate == startTime);
 
-      // 만약 값이 데이터베이스에 있다면
+      // 값이 비어있지않고, 목표 count보다 작게 수행했거나, 값이 없는경우 -> notAchieveList.add
+      // 값이 비어있지않고, 목표 count를 달성한 경우 -> achieveList.add
       if (data!.isNotEmpty) {
-        if (data.first.count >= habit.targetCount) {
-          list.add(habit);
+        if (data.first.count < habit.targetCount) {
+          notAchieveList.add(habit);
+        } else {
+          achieveList.add(habit);
         }
+      } else {
+        notAchieveList.add(habit);
       }
     });
 
-    return list;
+    if (achieveState == AchieveState.notAchieve) {
+      return notAchieveList;
+    } else {
+      return achieveList;
+    }
   }
 
   Future<void> removeHabitData(HabitData? habitData) async {
@@ -270,9 +213,7 @@ class DatabaseManager {
 
   // 차트 데이터 호출
   List<int> getChartData() {
-    DateTime toTime = DateTime.now();
-    DateTime startTime = DateTime(toTime.year, toTime.month, toTime.day);
-    // DateTime.now().subtract(Duration(days:1));
+    DateTime startTime = getStartTime(DateTime.now());
 
     List<int> result = [];
     for (int i = 6; i >= 0; i--) {
@@ -298,10 +239,10 @@ class DatabaseManager {
         }
       });
 
+      // 0개 이상이고, 습관 데이터가 존재한다면
       if (count > 0 && todayDatas != null && todayDatas.isNotEmpty) {
         double value = count.toDouble() / todayDatas.length.toDouble() * 100.0;
         result.add(value.toInt());
-        // result.add(double(count)! / double(todayDatas!.length) * 100.0);
       } else {
         result.add(0);
       }
