@@ -102,7 +102,6 @@ class TableView extends StatefulWidget {
 }
 
 class _TableViewState extends State<TableView> with SectionAdapterMixin {
-
   @override
   Widget build(BuildContext context) {
     return GetX<GetViewModel>(builder: (date) {
@@ -136,8 +135,12 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                       ? notAchieveHabitList[indexPath.item]
                       : achieveHabitList[indexPath.item]);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
+                  Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
+                      snackPosition: SnackPosition.TOP,
+                      animationDuration: const Duration(seconds: 1),
+                      duration: const Duration(seconds: 1),
+                      backgroundColor: Colors.white
+                  );
                 }
                 setState(() {});
               },
@@ -156,8 +159,12 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                       ? notAchieveHabitList[indexPath.item]
                       : achieveHabitList[indexPath.item]);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
+                  Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
+                      snackPosition: SnackPosition.TOP,
+                      animationDuration: const Duration(seconds: 1),
+                      duration: const Duration(seconds: 1),
+                      backgroundColor: Colors.white
+                  );
                 }
                 setState(() {});
               },
@@ -246,8 +253,7 @@ class TableViewCell extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         await Get.to(
-                () => AddHabit(
-                state: AddHabitState.MODIFY, habitData: habitData),
+            () => AddHabit(state: AddHabitState.MODIFY, habitData: habitData),
             transition: Transition.downToUp);
         data.updateDate(DateTime.now());
       },

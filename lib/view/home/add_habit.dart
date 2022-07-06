@@ -182,10 +182,12 @@ class _InputHabitDataState extends State<InputHabitData> {
                     // 입력값 제대로 작성했는지 체크
                     if (int.tryParse(targetCount.text) == null ||
                         habitName.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('입력값이 잘못되었습니다.'),
-                        duration: Duration(seconds: 1),
-                      ));
+                      Get.snackbar('입력값이 잘못되었습니다.', '입력값을 다시 확인해주세요.',
+                          snackPosition: SnackPosition.TOP,
+                          animationDuration: const Duration(seconds: 1),
+                          duration: const Duration(seconds: 1),
+                          backgroundColor: Colors.white
+                      );
                     } else {
                       if (state == AddHabitState.CREATE) {
                         DatabaseManager manager = DatabaseManager();
