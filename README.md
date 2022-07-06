@@ -75,10 +75,10 @@
 |<img src="https://user-images.githubusercontent.com/26789278/177654448-0ccfc97f-7c0b-4c13-9115-b366f345d938.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177654472-a5143e00-b426-41c3-8436-a5f58141451c.png"  width="200" height="410">|
 
 ### 습관추가화면
-|습관추가|습관수정|
-|-|-|
-|<img src="https://user-images.githubusercontent.com/26789278/177654460-cda107ab-dcfe-4671-9879-9f1842f2492b.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177654461-a8c20757-2875-4313-a5d2-08721cde51d6.png"  width="200" height="410">|
-  
+|습관추가|습관수정|색상선택|
+|-|-|-|
+|<img src="https://user-images.githubusercontent.com/26789278/177654460-cda107ab-dcfe-4671-9879-9f1842f2492b.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177654461-a8c20757-2875-4313-a5d2-08721cde51d6.png"  width="200" height="410">|<img src="https://user-images.githubusercontent.com/26789278/177656098-46c19537-176d-4ef6-9794-c13ddf0efecf.png"  width="200" height="410">|
+
 ### 통계화면
 |통계화면|
 |-|
