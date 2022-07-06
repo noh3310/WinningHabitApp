@@ -79,6 +79,7 @@ class _InputHabitDataState extends State<InputHabitData> {
       children: [
         Expanded(
           child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
               const SizedBox(height: 10.0),
               CustomTextField(
@@ -112,7 +113,11 @@ class _InputHabitDataState extends State<InputHabitData> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        // raise the [showDialog] widget
+                        // 색상선택 버튼을 클릭했을 때 키보드를 입력하고 있다면 focus를 해제준다.
+                        FocusScopeNode currentFocus = FocusScope.of(context);
+                        if (!currentFocus.hasPrimaryFocus) {
+                          currentFocus.unfocus();
+                        }
                         showDialog(
                             context: context,
                             builder: (BuildContext context) {
