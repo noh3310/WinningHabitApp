@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:winning_habit/view/setting/web_view.dart';
 
 class SettingView extends StatelessWidget {
@@ -22,8 +23,8 @@ class SettingView extends StatelessWidget {
           children: [
             TextButton(
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => WebViewWidget(state: UrlState.privacyPolicy,)));
+                Get.to(
+                    WebViewWidget(state: UrlState.privacyPolicy));
               },
               child: const Text(
                 '개인정보 처리방침',
@@ -33,8 +34,8 @@ class SettingView extends StatelessWidget {
             const SizedBox(height: 5),
             TextButton(
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => WebViewWidget(state: UrlState.openSourceLicense,)));
+                Get.to(
+                    WebViewWidget(state: UrlState.openSourceLicense));
               },
               child: const Text(
                 '오픈소스 라이센스',

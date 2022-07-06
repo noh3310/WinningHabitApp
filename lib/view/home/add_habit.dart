@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 import 'package:winning_habit/database/database.dart';
 
 import '../../database/habit_data.dart';
@@ -19,7 +21,7 @@ class AddHabit extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context, '뒤로가기');
+            Get.back();
           },
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
@@ -137,7 +139,7 @@ class _InputHabitDataState extends State<InputHabitData> {
                                     onPressed: () {
                                       setState(
                                           () => currentColor = pickerColor);
-                                      Navigator.of(context).pop();
+                                      Get.back();
                                     },
                                   ),
                                 ],
@@ -163,7 +165,7 @@ class _InputHabitDataState extends State<InputHabitData> {
                   child: ElevatedButton(
                     onPressed: () {
                       DatabaseManager().removeHabitData(habitData);
-                      Navigator.pop(context, '습관을 삭제했습니다.');
+                      Get.back();
                     },
                     style: ElevatedButton.styleFrom(
                       primary: Colors.redAccent,
@@ -189,13 +191,13 @@ class _InputHabitDataState extends State<InputHabitData> {
                         DatabaseManager manager = DatabaseManager();
                         manager.addHabit(habitName.text,
                             int.parse(targetCount.text), currentColor.value);
-                        Navigator.pop(context, '습관을 추가했습니다.');
+                        Get.back();
                       } else {
                         // 업데이트
                         DatabaseManager manager = DatabaseManager();
                         manager.modifyHabit(habitData!, habitName.text,
                             int.parse(targetCount.text), currentColor.value);
-                        Navigator.pop(context, '습관을 수정했습니다.');
+                        Get.back();
                       }
                     }
                   },

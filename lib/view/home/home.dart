@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -35,10 +37,8 @@ class _HomeViewState extends State<HomeView> {
         actions: [
           IconButton(
             onPressed: () async {
-              await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => AddHabit(state: AddHabitState.CREATE)));
+              await Get.to(AddHabit(state: AddHabitState.CREATE),
+                  transition: Transition.downToUp);
               setState(() {
                 viewModel.setDate(DateTime.now());
               });
@@ -167,7 +167,8 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                                 : achieveHabitList[indexPath.item]);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
+                            const SnackBar(
+                                content: Text('당일만 습관을 달성할 수 있습니다.')));
                       }
                       setState(() {});
                     },
@@ -188,7 +189,8 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                                 : achieveHabitList[indexPath.item]);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
+                            const SnackBar(
+                                content: Text('당일만 습관을 달성할 수 있습니다.')));
                       }
                       setState(() {});
                     },
@@ -227,8 +229,7 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
           .getNotAchieveHabitCount(viewModel.getCurrentDate());
     } else {
       // 달성한 습관개수 리턴
-      return databaseManager
-          .getAchieveHabitCount(viewModel.getCurrentDate());
+      return databaseManager.getAchieveHabitCount(viewModel.getCurrentDate());
     }
   }
 
@@ -282,13 +283,9 @@ class _TableViewCellState extends State<TableViewCell> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => AddHabit(
-                      state: AddHabitState.MODIFY,
-                      habitData: widget.habitData,
-                    )));
+        await Get.to(
+            AddHabit(state: AddHabitState.MODIFY, habitData: widget.habitData),
+            transition: Transition.downToUp);
         // 상위 위젯을 불러와서 setState를 시켜서 위젯 업데이트
         final _TableViewState? parent =
             context.findAncestorStateOfType<_TableViewState>();

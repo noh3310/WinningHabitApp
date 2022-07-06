@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 enum UrlState { privacyPolicy, openSourceLicense }
@@ -13,7 +15,8 @@ class WebViewWidget extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            // Navigator.of(context).pop();
+            Get.back();
           },
           icon: const Icon(Icons.arrow_back),
           color: Colors.black,
