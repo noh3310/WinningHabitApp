@@ -5,10 +5,9 @@ import 'package:winning_habit/view/chart/chart.dart';
 import 'package:winning_habit/view/home/home.dart';
 import 'package:winning_habit/view/setting/setting.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:winning_habit/view_model/view_model.dart';
 
 void main() async {
-   await DatabaseManager.instance.init();
+   await DatabaseManager().init();
 
   initializeDateFormatting('ko_KR', null);
   runApp(const MyApp());

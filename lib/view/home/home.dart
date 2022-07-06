@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -10,7 +9,7 @@ import 'package:winning_habit/view_model/view_model.dart';
 import '../../database/habit_data.dart';
 
 class HomeView extends StatefulWidget {
-  HomeView({Key? key}) : super(key: key);
+  const HomeView({Key? key}) : super(key: key);
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -22,54 +21,43 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white24,
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: () {
-              // 날짜 리셋
-              viewModel.setDate(DateTime.now());
+      appBar: AppBar(
+        backgroundColor: Colors.white24,
+        elevation: 0.0,
+        leading: IconButton(
+          onPressed: () {
+            // 날짜 리셋
+            viewModel.setDate(DateTime.now());
+          },
+          icon: const Icon(Icons.refresh),
+          color: Colors.black,
+        ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => AddHabit(state: AddHabitState.CREATE)));
+              setState(() {
+                viewModel.setDate(DateTime.now());
+              });
             },
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.add),
             color: Colors.black,
           ),
-          actions: [
-            IconButton(
-              onPressed: () async {
-                String text = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => AddHabit(state: AddHabitState.CREATE)));
-                setState(() {
-                  viewModel.setDate(DateTime.now());
-                });
-              },
-              icon: const Icon(Icons.add),
-              color: Colors.black,
-            ),
-          ],
-        ),
-        body: StreamBuilder<DateTime>(
-            stream: viewModel.date,
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  ),
-                );
-              } else {
-                return Column(
-                  children: [
-                    CalendarView(),
-                    SizedBox(height: 10.0),
-                    Expanded(
-                      child: TableView(),
-                    ),
-                  ],
-                );
-              }
-            }));
+        ],
+      ),
+      body: Column(
+        children: const [
+          CalendarView(),
+          SizedBox(height: 10.0),
+          Expanded(
+            child: TableView(),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -104,7 +92,6 @@ class _CalendarViewState extends State<CalendarView> {
             calendarFormat: CalendarFormat.week,
             onDaySelected: (selectedDay, focusedDay) {
               viewModel.setDate(selectedDay);
-              // setState(() {});
             },
             selectedDayPredicate: (day) {
               return isSameDay(snapShotDate, day);
@@ -126,6 +113,8 @@ class _CalendarViewState extends State<CalendarView> {
 }
 
 class TableView extends StatefulWidget {
+  const TableView({Key? key}) : super(key: key);
+
   @override
   State<TableView> createState() => _TableViewState();
 }
@@ -152,20 +141,16 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
           final dateData = snapshot.data ?? nowDate;
           final snapShotDate =
               DateTime(dateData.year, dateData.month, dateData.day);
+          final databaseManager = DatabaseManager();
           final notAchieveHabitList =
-              DatabaseManager.instance.getNotAchieveHabitList(snapShotDate);
+              databaseManager.getNotAchieveHabitList(snapShotDate);
           final achieveHabitList =
-              DatabaseManager.instance.getAchieveHabitList(snapShotDate);
+              databaseManager.getAchieveHabitList(snapShotDate);
 
-          // TODO: 만약 데이터가 없다면 ProgressBar로 보여줌(어떤방식으로 보여줄것인지 고려)
+          // 만약 데이터가 없다면 빈 화면 보여줌
           if (snapshot.data == null) {
             return Container(
               color: Colors.white24,
-            );
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white24),
-              ),
             );
           } else {
             return Slidable(
@@ -176,13 +161,13 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                   SlidableAction(
                     onPressed: (context) async {
                       if (snapShotDate == nowDate) {
-                        await DatabaseManager.instance.minusDailyHabit(
+                        await databaseManager.minusDailyHabit(
                             indexPath.section == 0
                                 ? notAchieveHabitList[indexPath.item]
                                 : achieveHabitList[indexPath.item]);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
+                            const SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
                       }
                       setState(() {});
                     },
@@ -197,16 +182,13 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                   SlidableAction(
                     onPressed: (context) async {
                       if (snapShotDate == nowDate) {
-                        await DatabaseManager.instance.addDailyHabit(
+                        await databaseManager.addDailyHabit(
                             indexPath.section == 0
-                                ? DatabaseManager.instance
-                                    .getNotAchieveHabitList(
-                                        snapShotDate)[indexPath.item]
-                                : DatabaseManager.instance.getAchieveHabitList(
-                                    snapShotDate)[indexPath.item]);
+                                ? notAchieveHabitList[indexPath.item]
+                                : achieveHabitList[indexPath.item]);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
+                            const SnackBar(content: Text('당일만 습관을 달성할 수 있습니다.')));
                       }
                       setState(() {});
                     },
@@ -219,7 +201,7 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
                 title: indexPath.section == 0
                     ? notAchieveHabitList[indexPath.item].name
                     : achieveHabitList[indexPath.item].name,
-                percent: DatabaseManager.instance.getDateHabitCount(
+                percent: databaseManager.getDateHabitCount(
                     indexPath.section == 0
                         ? notAchieveHabitList[indexPath.item]
                         : achieveHabitList[indexPath.item],
@@ -238,13 +220,14 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
 
   @override
   int numberOfItems(int section) {
+    final databaseManager = DatabaseManager();
     if (section == 0) {
       // 미달성한 습관개수 리턴
-      return DatabaseManager.instance
+      return databaseManager
           .getNotAchieveHabitCount(viewModel.getCurrentDate());
     } else {
       // 달성한 습관개수 리턴
-      return DatabaseManager.instance
+      return databaseManager
           .getAchieveHabitCount(viewModel.getCurrentDate());
     }
   }
@@ -299,17 +282,17 @@ class _TableViewCellState extends State<TableViewCell> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        String text = await Navigator.push(
+        await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => AddHabit(
                       state: AddHabitState.MODIFY,
                       habitData: widget.habitData,
                     )));
+        // 상위 위젯을 불러와서 setState를 시켜서 위젯 업데이트
         final _TableViewState? parent =
             context.findAncestorStateOfType<_TableViewState>();
         parent?.setState(() {
-          print('setState 호출');
           parent.viewModel.setDate(DateTime.now());
         });
       },

@@ -162,7 +162,7 @@ class _InputHabitDataState extends State<InputHabitData> {
                   padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
                   child: ElevatedButton(
                     onPressed: () {
-                      DatabaseManager.instance.removeHabitData(habitData);
+                      DatabaseManager().removeHabitData(habitData);
                       Navigator.pop(context, '습관을 삭제했습니다.');
                     },
                     style: ElevatedButton.styleFrom(

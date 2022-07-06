@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import 'package:winning_habit/database/database.dart';
 
 class ChartView extends StatelessWidget {
@@ -108,7 +107,7 @@ class _HabitChartState extends State<HabitChart> {
 
   // 데이터 값
   List<BarChartGroupData> showingGroups() {
-    var chartData = DatabaseManager.instance.getChartData();
+    var chartData = DatabaseManager().getChartData();
     return List.generate(7, (i) {
       return makeGroupData(i, chartData[i].toDouble(), isTouched: i == touchedIndex);
       // switch (i) {

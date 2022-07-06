@@ -11,11 +11,11 @@ class DatabaseManager {
   DatabaseManager._privateConstructor();
 
   // 생성자를 호출하고 반환된 Singleton 인스턴스를 _instance 변수에 할당
-  static final DatabaseManager instance = DatabaseManager._privateConstructor();
+  static final DatabaseManager _instance = DatabaseManager._privateConstructor();
 
   // Singleton() 호출시에 _instance 변수를 반환
   factory DatabaseManager() {
-    return instance;
+    return _instance;
   }
 
   late Box<HabitData>? _habitData;
