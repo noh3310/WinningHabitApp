@@ -27,7 +27,7 @@ class HabitChart extends StatefulWidget {
 }
 
 class _HabitChartState extends State<HabitChart> {
-  final Color barBackgroundColor = Colors.redAccent; //Color(0xff72d8bf);
+  final Color barBackgroundColor = Colors.redAccent;
   final Duration animDuration = const Duration(milliseconds: 250);
 
   int touchedIndex = -1;
@@ -35,8 +35,7 @@ class _HabitChartState extends State<HabitChart> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      color: Colors.white, //Color(0xff81e5cd),
+      color: Colors.white,
       child: Stack(
         children: <Widget>[
           Padding(
@@ -46,13 +45,6 @@ class _HabitChartState extends State<HabitChart> {
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                // const Text(
-                //   '주간 달성률(%)',
-                //   style: TextStyle(
-                //       color: Colors.black,
-                //       fontSize: 24,
-                //       fontWeight: FontWeight.bold),
-                // ),
                 const SizedBox(
                   height: 30.0,
                 ),
@@ -94,11 +86,6 @@ class _HabitChartState extends State<HabitChart> {
           borderSide: isTouched
               ? const BorderSide(color: Colors.yellow, width: 1)
               : const BorderSide(color: Colors.white, width: 0),
-          // backDrawRodData: BackgroundBarChartRodData(
-          //   show: true,
-          //   toY: 20,
-          //   color: barBackgroundColor,
-          // ),
         ),
       ],
       showingTooltipIndicators: showTooltips,
@@ -110,42 +97,6 @@ class _HabitChartState extends State<HabitChart> {
     var chartData = DatabaseManager().getChartData();
     return List.generate(7, (i) {
       return makeGroupData(i, chartData[i].toDouble(), isTouched: i == touchedIndex);
-      // switch (i) {
-      //   case 0:
-      //     return makeGroupData(0, chartData[0], isTouched: i == touchedIndex);
-      //   case 1:
-      //     return makeGroupData(1, 0, isTouched: i == touchedIndex);
-      //   case 2:
-      //     return makeGroupData(2, 80, isTouched: i == touchedIndex);
-      //   case 3:
-      //     return makeGroupData(3, 50, isTouched: i == touchedIndex);
-      //   case 4:
-      //     return makeGroupData(4, 20, isTouched: i == touchedIndex);
-      //   case 5:
-      //     return makeGroupData(5, 1, isTouched: i == touchedIndex);
-      //   case 6:
-      //     return makeGroupData(6, 3, isTouched: i == touchedIndex);
-      //   default:
-      //     return throw Error();
-      // }
-      // switch (i) {
-      //   case 0:
-      //     return makeGroupData(0, chartData[0], isTouched: i == touchedIndex);
-      //   case 1:
-      //     return makeGroupData(1, chartData[1], isTouched: i == touchedIndex);
-      //   case 2:
-      //     return makeGroupData(2, chartData[2], isTouched: i == touchedIndex);
-      //   case 3:
-      //     return makeGroupData(3, chartData[3], isTouched: i == touchedIndex);
-      //   case 4:
-      //     return makeGroupData(4, chartData[4], isTouched: i == touchedIndex);
-      //   case 5:
-      //     return makeGroupData(5, chartData[5], isTouched: i == touchedIndex);
-      //   case 6:
-      //     return makeGroupData(6, chartData[6], isTouched: i == touchedIndex);
-      //   default:
-      //     return throw Error();
-      // }
     });
   }
 
@@ -182,11 +133,6 @@ class _HabitChartState extends State<HabitChart> {
             reservedSize: 38,
           ),
         ),
-        // leftTitles: AxisTitles(
-        //   sideTitles: SideTitles(
-        //     showTitles: true,
-        //   ),
-        // ),
       ),
       borderData: FlBorderData(
         show: false,

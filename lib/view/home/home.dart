@@ -12,12 +12,11 @@ import 'package:winning_habit/view_model/get_view_model.dart';
 import '../../database/habit_data.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({Key? key}) : super(key: key);
+  HomeView({Key? key}) : super(key: key);
+  final GetViewModel date = Get.put(GetViewModel());
 
   @override
   Widget build(BuildContext context) {
-    final GetViewModel date = Get.put(GetViewModel());
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white24,
@@ -111,10 +110,10 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    return GetX<GetViewModel>(
-        builder: (date) {
-      DateTime now = DateTime.now();
-      DateTime nowDate = DateTime(now.year, now.month, now.day);
+    DateTime now = DateTime.now();
+    DateTime nowDate = DateTime(now.year, now.month, now.day);
+
+    return GetX<GetViewModel>(builder: (date) {
       final dateData = date.dateTime.value; //.data ?? nowDate;
       final snapShotDate =
           DateTime(dateData.year, dateData.month, dateData.day);
@@ -195,7 +194,7 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
   @override
   int numberOfItems(int section) {
     final databaseManager = DatabaseManager();
-    final data = Get.put(GetViewModel());
+    GetViewModel data = Get.find();
     if (section == 0) {
       // 미달성한 습관개수 리턴
       return databaseManager.getNotAchieveHabitCount(data.dateTime.value);

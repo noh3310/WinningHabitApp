@@ -38,7 +38,7 @@ class NavigationBar extends StatefulWidget {
 class _NavigationBarState extends State<NavigationBar> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = [
-    const HomeView(),
+    HomeView(),
     const ChartView(),
     const SettingView(),
   ];
