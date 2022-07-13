@@ -6,7 +6,6 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_section_list/flutter_section_list.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'package:winning_habit/database/database.dart';
 import 'package:winning_habit/view/home/add_habit.dart';
 import 'package:winning_habit/view_model/get_view_model.dart';
 import '../../database/habit_data.dart';
@@ -45,7 +44,7 @@ class HomeView extends StatelessWidget {
         children: [
           CalendarView(),
           const SizedBox(height: 10.0),
-          const Expanded(
+          Expanded(
             child: TableView(),
           ),
         ],
@@ -92,113 +91,81 @@ class CalendarView extends StatelessWidget {
   }
 }
 
-class TableView extends StatefulWidget {
-  const TableView({Key? key}) : super(key: key);
+class TableView extends StatelessWidget with SectionAdapterMixin {
+  TableView({Key? key}) : super(key: key);
 
-  @override
-  State<TableView> createState() => _TableViewState();
-}
-
-class _TableViewState extends State<TableView> with SectionAdapterMixin {
   @override
   Widget build(BuildContext context) {
-    return Obx(() =>
-        SectionListView.builder(adapter: this)
-    );
+    return Obx(() => SectionListView.builder(adapter: this));
   }
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
-    DateTime now = DateTime.now();
-    DateTime nowDate = DateTime(now.year, now.month, now.day);
     final GetViewModel date = Get.find();
-      final dateData = date.dateTime.value; //.data ?? nowDate;
-      final snapShotDate =
-          DateTime(dateData.year, dateData.month, dateData.day);
-      final databaseManager = DatabaseManager();
-      final notAchieveHabitList =
-          databaseManager.getNotAchieveHabitList(snapShotDate);
-      final achieveHabitList =
-          databaseManager.getAchieveHabitList(snapShotDate);
 
-    return Slidable(
-      startActionPane: ActionPane(
-        motion: const ScrollMotion(), // 모션
-        key: ValueKey(indexPath.item),
-        children: [
-          SlidableAction(
-            onPressed: (context) async {
-              if (snapShotDate == nowDate) {
-                await databaseManager.minusDailyHabit(indexPath.section == 0
-                    ? notAchieveHabitList[indexPath.item]
-                    : achieveHabitList[indexPath.item]);
-              } else {
-                Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
-                    snackPosition: SnackPosition.TOP,
-                    animationDuration: const Duration(seconds: 1),
-                    duration: const Duration(seconds: 1),
-                    backgroundColor: Colors.white);
-              }
-              setState(() {});
-            },
-            foregroundColor: Colors.redAccent,
-            icon: Icons.exposure_minus_1,
+    return Obx(() => Slidable(
+          startActionPane: ActionPane(
+            motion: const ScrollMotion(), // 모션
+            key: ValueKey(indexPath.item),
+            children: [
+              SlidableAction(
+                onPressed: (context) async {
+                  final habitData =
+                      date.getHabitData(indexPath.section, indexPath.item);
+                  final result = await date.habitAchievement(
+                      habitData, HabitAchieveState.minus);
+
+                  if (result == false) {
+                    Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
+                        snackPosition: SnackPosition.TOP,
+                        animationDuration: const Duration(seconds: 1),
+                        duration: const Duration(seconds: 1),
+                        backgroundColor: Colors.white);
+                  }
+                },
+                foregroundColor: Colors.redAccent,
+                icon: Icons.exposure_minus_1,
+              ),
+            ],
           ),
-        ],
-      ),
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
-        children: [
-          SlidableAction(
-            onPressed: (context) async {
-              if (snapShotDate == nowDate) {
-                await databaseManager.addDailyHabit(indexPath.section == 0
-                    ? notAchieveHabitList[indexPath.item]
-                    : achieveHabitList[indexPath.item]);
-              } else {
-                Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
-                    snackPosition: SnackPosition.TOP,
-                    animationDuration: const Duration(seconds: 1),
-                    duration: const Duration(seconds: 1),
-                    backgroundColor: Colors.white);
-              }
-              setState(() {});
-            },
-            foregroundColor: Colors.blueAccent,
-            icon: Icons.plus_one,
+          endActionPane: ActionPane(
+            motion: const ScrollMotion(),
+            children: [
+              SlidableAction(
+                onPressed: (context) async {
+                  final habitData =
+                      date.getHabitData(indexPath.section, indexPath.item);
+                  final result = await date.habitAchievement(
+                      habitData, HabitAchieveState.add);
+
+                  if (result == false) {
+                    Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
+                        snackPosition: SnackPosition.TOP,
+                        animationDuration: const Duration(seconds: 1),
+                        duration: const Duration(seconds: 1),
+                        backgroundColor: Colors.white);
+                  }
+                },
+                foregroundColor: Colors.blueAccent,
+                icon: Icons.plus_one,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: TableViewCell(
-        title: indexPath.section == 0
-            ? notAchieveHabitList[indexPath.item].name
-            : achieveHabitList[indexPath.item].name,
-        percent: databaseManager.getDateHabitCount(
-            indexPath.section == 0
-                ? notAchieveHabitList[indexPath.item]
-                : achieveHabitList[indexPath.item],
-            snapShotDate),
-        color: indexPath.section == 0
-            ? Color(notAchieveHabitList[indexPath.item].color)
-            : Color(achieveHabitList[indexPath.item].color),
-        habitData: indexPath.section == 0
-            ? notAchieveHabitList[indexPath.item]
-            : achieveHabitList[indexPath.item],
-      ),
-    );
+          child: TableViewCell(
+            title: date.getHabitData(indexPath.section, indexPath.item).name,
+            percent: date.getCountString(
+                date.getHabitData(indexPath.section, indexPath.item)),
+            color: Color(
+                date.getHabitData(indexPath.section, indexPath.item).color),
+            habitData: date.getHabitData(indexPath.section, indexPath.item),
+          ),
+        ));
   }
 
   @override
   int numberOfItems(int section) {
-    final databaseManager = DatabaseManager();
     GetViewModel data = Get.find();
-    if (section == 0) {
-      // 미달성한 습관개수 리턴
-      return databaseManager.getNotAchieveHabitCount(data.dateTime.value);
-    } else {
-      // 달성한 습관개수 리턴
-      return databaseManager.getAchieveHabitCount(data.dateTime.value);
-    }
+    return data.getCount(section);
   }
 
   @override
