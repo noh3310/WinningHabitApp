@@ -42,10 +42,10 @@ class HomeView extends StatelessWidget {
         ],
       ),
       body: Column(
-        children: const [
+        children: [
           CalendarView(),
-          SizedBox(height: 10.0),
-          Expanded(
+          const SizedBox(height: 10.0),
+          const Expanded(
             child: TableView(),
           ),
         ],
@@ -55,41 +55,40 @@ class HomeView extends StatelessWidget {
 }
 
 class CalendarView extends StatelessWidget {
-  const CalendarView({Key? key}) : super(key: key);
+  CalendarView({Key? key}) : super(key: key);
+  final GetViewModel date = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    return GetX<GetViewModel>(builder: (date) {
-      return TableCalendar(
-        locale: 'ko-KR',
-        // TODO: 시작일이랑 마감일을 수정해줘야한다.
-        firstDay: DateTime.utc(2010, 10, 16),
-        lastDay: DateTime.utc(2030, 3, 14),
-        headerStyle: const HeaderStyle(
-          titleCentered: true,
-          formatButtonVisible: false,
-        ),
-        focusedDay: date.dateTime.value,
-        calendarFormat: CalendarFormat.week,
-        onDaySelected: (selectedDay, focusedDay) {
-          date.updateDate(selectedDay);
-        },
-        selectedDayPredicate: (day) {
-          return isSameDay(date.dateTime.value, day);
-        },
-        calendarStyle: const CalendarStyle(
-          isTodayHighlighted: true,
-          selectedDecoration: BoxDecoration(
-            color: Colors.blueAccent,
-            shape: BoxShape.circle,
+    return Obx(() => TableCalendar(
+          locale: 'ko-KR',
+          // TODO: 시작일이랑 마감일을 수정해줘야한다.
+          firstDay: DateTime.utc(2010, 10, 16),
+          lastDay: DateTime.utc(2030, 3, 14),
+          headerStyle: const HeaderStyle(
+            titleCentered: true,
+            formatButtonVisible: false,
           ),
-          todayDecoration: BoxDecoration(
-            color: Colors.redAccent,
-            shape: BoxShape.circle,
+          focusedDay: date.dateTime.value,
+          calendarFormat: CalendarFormat.week,
+          onDaySelected: (selectedDay, focusedDay) {
+            date.updateDate(selectedDay);
+          },
+          selectedDayPredicate: (day) {
+            return isSameDay(date.dateTime.value, day);
+          },
+          calendarStyle: const CalendarStyle(
+            isTodayHighlighted: true,
+            selectedDecoration: BoxDecoration(
+              color: Colors.blueAccent,
+              shape: BoxShape.circle,
+            ),
+            todayDecoration: BoxDecoration(
+              color: Colors.redAccent,
+              shape: BoxShape.circle,
+            ),
           ),
-        ),
-      );
-    });
+        ));
   }
 }
 
@@ -103,17 +102,16 @@ class TableView extends StatefulWidget {
 class _TableViewState extends State<TableView> with SectionAdapterMixin {
   @override
   Widget build(BuildContext context) {
-    return GetX<GetViewModel>(builder: (date) {
-      return SectionListView.builder(adapter: this);
-    });
+    return Obx(() =>
+        SectionListView.builder(adapter: this)
+    );
   }
 
   @override
   Widget getItem(BuildContext context, IndexPath indexPath) {
     DateTime now = DateTime.now();
     DateTime nowDate = DateTime(now.year, now.month, now.day);
-
-    return GetX<GetViewModel>(builder: (date) {
+    final GetViewModel date = Get.find();
       final dateData = date.dateTime.value; //.data ?? nowDate;
       final snapShotDate =
           DateTime(dateData.year, dateData.month, dateData.day);
@@ -123,72 +121,71 @@ class _TableViewState extends State<TableView> with SectionAdapterMixin {
       final achieveHabitList =
           databaseManager.getAchieveHabitList(snapShotDate);
 
-      return Slidable(
-        startActionPane: ActionPane(
-          motion: const ScrollMotion(), // 모션
-          key: ValueKey(indexPath.item),
-          children: [
-            SlidableAction(
-              onPressed: (context) async {
-                if (snapShotDate == nowDate) {
-                  await databaseManager.minusDailyHabit(indexPath.section == 0
-                      ? notAchieveHabitList[indexPath.item]
-                      : achieveHabitList[indexPath.item]);
-                } else {
-                  Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
-                      snackPosition: SnackPosition.TOP,
-                      animationDuration: const Duration(seconds: 1),
-                      duration: const Duration(seconds: 1),
-                      backgroundColor: Colors.white);
-                }
-                setState(() {});
-              },
-              foregroundColor: Colors.redAccent,
-              icon: Icons.exposure_minus_1,
-            ),
-          ],
-        ),
-        endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          children: [
-            SlidableAction(
-              onPressed: (context) async {
-                if (snapShotDate == nowDate) {
-                  await databaseManager.addDailyHabit(indexPath.section == 0
-                      ? notAchieveHabitList[indexPath.item]
-                      : achieveHabitList[indexPath.item]);
-                } else {
-                  Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
-                      snackPosition: SnackPosition.TOP,
-                      animationDuration: const Duration(seconds: 1),
-                      duration: const Duration(seconds: 1),
-                      backgroundColor: Colors.white);
-                }
-                setState(() {});
-              },
-              foregroundColor: Colors.blueAccent,
-              icon: Icons.plus_one,
-            ),
-          ],
-        ),
-        child: TableViewCell(
-          title: indexPath.section == 0
-              ? notAchieveHabitList[indexPath.item].name
-              : achieveHabitList[indexPath.item].name,
-          percent: databaseManager.getDateHabitCount(
-              indexPath.section == 0
-                  ? notAchieveHabitList[indexPath.item]
-                  : achieveHabitList[indexPath.item],
-              snapShotDate),
-          color: indexPath.section == 0
-              ? Color(notAchieveHabitList[indexPath.item].color)
-              : Color(achieveHabitList[indexPath.item].color),
-          habitData: indexPath.section == 0
-              ? notAchieveHabitList[indexPath.item]
-              : achieveHabitList[indexPath.item],
-        ),
-      );
-    });
+    return Slidable(
+      startActionPane: ActionPane(
+        motion: const ScrollMotion(), // 모션
+        key: ValueKey(indexPath.item),
+        children: [
+          SlidableAction(
+            onPressed: (context) async {
+              if (snapShotDate == nowDate) {
+                await databaseManager.minusDailyHabit(indexPath.section == 0
+                    ? notAchieveHabitList[indexPath.item]
+                    : achieveHabitList[indexPath.item]);
+              } else {
+                Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
+                    snackPosition: SnackPosition.TOP,
+                    animationDuration: const Duration(seconds: 1),
+                    duration: const Duration(seconds: 1),
+                    backgroundColor: Colors.white);
+              }
+              setState(() {});
+            },
+            foregroundColor: Colors.redAccent,
+            icon: Icons.exposure_minus_1,
+          ),
+        ],
+      ),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (context) async {
+              if (snapShotDate == nowDate) {
+                await databaseManager.addDailyHabit(indexPath.section == 0
+                    ? notAchieveHabitList[indexPath.item]
+                    : achieveHabitList[indexPath.item]);
+              } else {
+                Get.snackbar('습관추가 실패', '당일만 습관을 달성할 수 있습니다.',
+                    snackPosition: SnackPosition.TOP,
+                    animationDuration: const Duration(seconds: 1),
+                    duration: const Duration(seconds: 1),
+                    backgroundColor: Colors.white);
+              }
+              setState(() {});
+            },
+            foregroundColor: Colors.blueAccent,
+            icon: Icons.plus_one,
+          ),
+        ],
+      ),
+      child: TableViewCell(
+        title: indexPath.section == 0
+            ? notAchieveHabitList[indexPath.item].name
+            : achieveHabitList[indexPath.item].name,
+        percent: databaseManager.getDateHabitCount(
+            indexPath.section == 0
+                ? notAchieveHabitList[indexPath.item]
+                : achieveHabitList[indexPath.item],
+            snapShotDate),
+        color: indexPath.section == 0
+            ? Color(notAchieveHabitList[indexPath.item].color)
+            : Color(achieveHabitList[indexPath.item].color),
+        habitData: indexPath.section == 0
+            ? notAchieveHabitList[indexPath.item]
+            : achieveHabitList[indexPath.item],
+      ),
+    );
   }
 
   @override
